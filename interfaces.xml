@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<config version="1.0" logLevel="debug">
+  
+  <ldap basedn="cn=GateID, o=OrganizationName" host="dyndns.piscale.com"/>
+  <!-- "host" will be auto-generated: host="dyndns.piscale.com"
+  @Server-side: full DN is: cn=GateID, o=OrganizationName, c=Country
+  -->
+
+  <interface name="eth0" type="ethernet" comment="base for WAN"/>
+  <interface name="eth1" type="ethernet" comment="base for LAN"/>
+  <interface name="eth2" type="ethernet" comment="DMZ">
+    <network id="10" name="DMZ" config="192.168.0.2/24" comment="Server Zone"/>
+  </interface>
+  
+  <interface name="lan11" type="ethernet" sub_type="vlan" based_on="eth1" tag="0011" comment="Sales Dept">
+    <network id="11" name="LAN11" config="192.168.11.1/24"/>
+    <dhcp ldap="yes"/>
+    <!--Neu trong <network>, dat config="dhcp" thi` IP cua interface/network do se la dynamic
+        Con` <dhcp> dung` de config cho cac may' cung` subnet voi <interface> do'
+    -->
+  </interface>
+  <interface name="lan12" type="ethernet" sub_type="vlan" based_on="eth1" tag="0012" comment="IT&amp;HR Dept">
+    <network id="12" name="LAN12" config="192.168.12.1/24"/>
+    <dhcp ldap="yes"/>
+  </interface>
+  <interface name="lan30" type="ethernet" sub_type="vlan" based_on="eth1" tag="0030" comment="for Guests">
+    <network id="30" name="WIFI_for_Guest" config="192.168.30.1/24"/>
+    <dhcp range="192.168.30.10-100" allow_to_lan="no"/>
+  </interface>
+
+  <interface name="vlan0101" type="ethernet" sub_type="vlan" hw_addr="00:1c:60:1a:9c:c1" based_on="eth0" tag="101">
+  </interface>
+  <interface name="vlan0102" type="ethernet" sub_type="vlan" hw_addr="00:1c:60:1d:3c:a2" based_on="eth0" tag="102">
+  </interface>
+  <interface name="vlan0103" type="ethernet" sub_type="vlan" hw_addr="00:1c:60:1a:9c:c3" based_on="eth0" tag="103">
+    <network id="53" name="VDC1" config="113.160.0.10/30" gateway="113.160.0.9" dns="203.162.0.181"/>
+  </interface>
+  
+  <interface name="vlan0104" type="ethernet" sub_type="vlan" hw_addr="00:1c:60:1a:9c:c4" based_on="eth0" tag="104">
+    <network id="54" name="VDC2" config="113.160.0.14/30" gateway="113.160.0.13" dns="203.162.0.182"/>
+  </interface>
+
+  <!-- Tiep theo la` config PPPoE, username/password -->
+  <interface name="wan1" auto="1" type="ppp">
+    <ppp type="pppoe" options="usepeerdns" based_on="vlan0101" username="adsl_btr_074@a1.evntel" password="adsl074"/>
+    <network id="51" name="WAN1"/>
+  </interface>
+  <interface name="wan2" auto="1" type="ppp">
+    <ppp type="pppoe" options="usepeerdns" based_on="vlan0102" username="adsl_btr_073@a1.evntel" password="adsl073"/>
+    <network id="52" name="WAN2"/>
+  </interface>
+
+</config>
